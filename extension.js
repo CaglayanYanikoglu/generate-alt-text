@@ -50,31 +50,28 @@ class CodelensProvider {
 const editor = vscode.window.activeTextEditor;
 
 async function generateAltText(image, range) {
-	if (editor) {
-		const word = image;
-
-		// TODO: if no selection show error
-		if (!word) return;
-
-		const rex = /<img[^>]+src="?([^"\s]+)"?\s*\/>/g;
-
-		const matches = rex.exec(word);
-		if (!matches) return;
-
-		const imageUrl = matches[1];
-
-		if (!imageUrl) return;
-
-		const url = "https://alt-text-generator.vercel.app/api/generate?imageUrl=" + imageUrl;
-		const response = await axios(url);
-		const altText = response.data;
-
-		editor.edit(editBuilder => {
-			const withAlt = word.replace('img', `img alt="${altText}"`);
-			editBuilder.replace(range, withAlt);
-			console.log('Successfully added.');
-		});
+	if (!editor) {
+		console.log('No editor found.');
+		return;
 	}
+
+	const srcRegex = /src="([^"]*)"/;
+	const matches = srcRegex.exec(image);
+	if (!matches) {
+		console.log('No src found.');
+		return;
+	}
+
+	const imageUrl = matches[1];
+	const url = `https://alt-text-generator.vercel.app/api/generate?imageUrl=${imageUrl}`
+	const response = await axios(url);
+	const altText = response.data;
+
+	editor.edit(editBuilder => {
+		const withAlt = image.replace('img', `img alt="${altText}"`);
+		editBuilder.replace(range, withAlt);
+		console.log('Successfully added.');
+	});
 }
 
 
@@ -83,8 +80,6 @@ async function init() {
 }
 
 function activate(context) {
-	console.log('Congratulations, your extension "generate-alt-text" is now active!');
-
 	let disposable = vscode.commands.registerCommand('generate-alt-text.generateAltText', function () {
 		init();
 	});
@@ -92,25 +87,20 @@ function activate(context) {
 	const codelensProvider = new CodelensProvider();
 
 	vscode.languages.registerCodeLensProvider("*", codelensProvider);
-
 	vscode.commands.registerCommand("codelens-sample.enableCodeLens", () => {
 		vscode.workspace.getConfiguration("codelens-sample").update("enableCodeLens", true, true);
 	});
-
 	vscode.commands.registerCommand("codelens-sample.disableCodeLens", () => {
 		vscode.workspace.getConfiguration("codelens-sample").update("enableCodeLens", false, true);
 	});
-
 	vscode.commands.registerCommand("codelens-sample.codelensAction", (args) => {
+		console.log(args);
 		generateAltText(args.matches[0], args.range)
 	});
-
 	context.subscriptions.push(disposable);
 }
 
-function deactivate() {
-
-}
+function deactivate() { }
 
 module.exports = {
 	activate,
