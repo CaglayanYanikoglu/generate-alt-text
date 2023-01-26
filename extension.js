@@ -31,8 +31,6 @@ class CodelensProvider {
 				const indexOf = line.text.indexOf(matches[0]);
 				const position = new vscode.Position(line.lineNumber, indexOf);
 				const range = document.getWordRangeAtPosition(position, new RegExp(this.regex));
-				console.log('position:', position)
-				console.log('range: ', range)
 				if (range) {
 					this.codeLenses.push(new vscode.CodeLens(range, {
 						title: "Generate Alt Text",
