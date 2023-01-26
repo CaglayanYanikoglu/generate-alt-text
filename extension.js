@@ -5,6 +5,63 @@ const axios = require('axios');
  * @param {vscode.ExtensionContext} context
  */
 
+class CodelensProvider {
+
+	codeLenses = [];
+	regex;
+	_onDidChangeCodeLenses = new vscode.EventEmitter();
+	onDidChangeCodeLenses = this._onDidChangeCodeLenses.event;
+
+	constructor() {
+		this.regex = /<img[^>]*\/?>/g;
+
+		vscode.workspace.onDidChangeConfiguration((_) => {
+			this._onDidChangeCodeLenses.fire();
+		});
+	}
+
+	provideCodeLenses(document, token) {
+		if (vscode.workspace.getConfiguration("codelens-sample").get("enableCodeLens", true)) {
+			this.codeLenses = [];
+			const regex = new RegExp(this.regex);
+			const text = document.getText();
+			let matches;
+			while ((matches = regex.exec(text)) !== null) {
+				const line = document.lineAt(document.positionAt(matches.index).line);
+				const indexOf = line.text.indexOf(matches[0]);
+				const position = new vscode.Position(line.lineNumber, indexOf);
+				const range = document.getWordRangeAtPosition(position, new RegExp(this.regex));
+				console.log('position:', position)
+				console.log('range: ', range)
+				if (range) {
+					this.codeLenses.push(new vscode.CodeLens(range, {
+						title: "Generate Alt Text",
+						tooltip: "Generating alt text for image",
+						command: "codelens-sample.codelensAction",
+						arguments: [{ matches, range }]
+					}));
+				}
+			}
+			return this.codeLenses;
+		}
+		return [];
+	}
+
+	// resolveCodeLens(codeLens, token) {
+	// 	console.log(codeLens);
+	//   if (vscode.workspace.getConfiguration("codelens-sample").get("enableCodeLens", true)) {
+	// 		codeLens.command = {
+	//       title: "Generate Alt Text",
+	//       tooltip: "Generating alt text for image",
+	//       command: "codelens-sample.codelensAction",
+	//       arguments: ["Argument 1", false]
+	//     };
+	//     return codeLens;
+	//   }
+	//   return null;
+	// }
+}
+
 const editor = vscode.window.activeTextEditor;
 
 function provideGenerateButton(images) {
@@ -15,11 +72,13 @@ function provideGenerateButton(images) {
 	}));
 }
 
-async function generateImage() {
+async function generateImage(image, range) {
+	console.log('image', image);
 	if (editor) {
 		const document = editor.document;
-		const selection = editor.selection;
-		const word = document.getText(selection);
+		// const selection = editor.selection;
+		// console.log('selection', selection);
+		const word = image;
 
 		// TODO: if no selection show error
 		if (!word) return;
@@ -39,7 +98,7 @@ async function generateImage() {
 
 		editor.edit(editBuilder => {
 			const withAlt = word.replace('img', `img alt="${altText}"`);
-			editBuilder.replace(selection, withAlt);
+			editBuilder.replace(range, withAlt);
 			console.log('Successfully added.');
 		});
 	}
@@ -65,37 +124,9 @@ function findImageLines(doc) {
 	return matches;
 }
 
-/* async function findImages() {
-
-	if (editor) {
-		const document = editor.document;
-
-		// Get the document text
-		const documentText = document.getText();
-
-		const images = documentText.match(/<img[^>]*\/?>/g);
-		for (let i = 0; i < images.length; i++) {
-			// TODO: put icon next to it
-			console.log(images[i]);
-		}
-	}
-} */
-
-function toggleRegexPreview() {
-	console.log('toggleRegexPreview');
-}
-
-function provideCodeLenses(doc, token) {
-	const matches = findImageLines(doc);
-	console.log(matches);
-	return matches.map(match => new vscode.CodeLens(match.range, {
-		title: 'Atakan Pappa...',
-		command: 'extension.toggleRegexPreview',
-		arguments: [match]
-	}));
-}
 
 async function init() {
+	console.log('init');
 	// findImages();
 	//provideCodeLenses();
 	// generateImage();
@@ -105,22 +136,35 @@ async function init() {
 
 function activate(context) {
 	console.log('Congratulations, your extension "generate-alt-text" is now active!');
-	context.subscriptions.push(vscode.commands.registerCommand('extension.toggleRegexPreview', toggleRegexPreview));
-
-	const languages = ['javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'vue', 'php', 'haxe'];
-	languages.forEach(language => {
-		context.subscriptions.push(vscode.languages.registerCodeLensProvider(language, { provideCodeLenses }));
-	});
-
 
 	let disposable = vscode.commands.registerCommand('generate-alt-text.generateAltText', function () {
 		init();
 	});
 
+	const codelensProvider = new CodelensProvider();
+
+	vscode.languages.registerCodeLensProvider("*", codelensProvider);
+
+	vscode.commands.registerCommand("codelens-sample.enableCodeLens", () => {
+		vscode.workspace.getConfiguration("codelens-sample").update("enableCodeLens", true, true);
+	});
+
+	vscode.commands.registerCommand("codelens-sample.disableCodeLens", () => {
+		vscode.workspace.getConfiguration("codelens-sample").update("enableCodeLens", false, true);
+	});
+
+	vscode.commands.registerCommand("codelens-sample.codelensAction", (args) => {
+		console.log('clickeed', args);
+		const result = generateImage(args.matches[0], args.range)
+
+	});
+
 	context.subscriptions.push(disposable);
 }
 
-function deactivate() { }
+function deactivate() {
+
+}
 
 module.exports = {
 	activate,

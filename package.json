@@ -10,7 +10,8 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:generate-alt-text.generateAltText"
+    "onCommand:generate-alt-text.generateAltText",
+    "onStartupFinished"
   ],
   "main": "./extension.js",
   "contributes": {
