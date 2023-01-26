@@ -13,7 +13,7 @@ class CodelensProvider {
 	onDidChangeCodeLenses = this._onDidChangeCodeLenses.event;
 
 	constructor() {
-		this.regex = /<img[^>]*\/?>/g;
+		this.regex = /<img(?!.*alt).*?>/g;
 
 		vscode.workspace.onDidChangeConfiguration((_) => {
 			this._onDidChangeCodeLenses.fire();
@@ -27,9 +27,6 @@ class CodelensProvider {
 			const text = document.getText();
 			let matches;
 			while ((matches = regex.exec(text)) !== null) {
-				// if alt attribute exist, continue
-				if (matches[0].includes('alt')) continue;
-
 				const line = document.lineAt(document.positionAt(matches.index).line);
 				const indexOf = line.text.indexOf(matches[0]);
 				const position = new vscode.Position(line.lineNumber, indexOf);
