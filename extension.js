@@ -49,7 +49,7 @@ class CodelensProvider {
 
 async function generateAltText(image, range) {
 	const editor = vscode.window.activeTextEditor;
-	const srcRegex = /src="([^"]*)"/;
+	const srcRegex = /src=['"]([^'"]*)['"]/;
 	const matches = srcRegex.exec(image);
 	if (!matches) {
 		console.log('No src found.');
