@@ -51,14 +51,6 @@ class CodelensProvider {
 
 const editor = vscode.window.activeTextEditor;
 
-function provideGenerateButton(images) {
-	return matches.map(match => new vscode.CodeLens(match.range, {
-		title: 'Test Regex...',
-		command: 'extension.toggleRegexPreview',
-		arguments: [match]
-	}));
-}
-
 async function generateAltText(image, range) {
 	if (editor) {
 		const word = image;
