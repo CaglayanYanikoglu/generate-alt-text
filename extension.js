@@ -47,14 +47,8 @@ class CodelensProvider {
 
 }
 
-const editor = vscode.window.activeTextEditor;
-
 async function generateAltText(image, range) {
-	if (!editor) {
-		console.log('No editor found.');
-		return;
-	}
-
+	const editor = vscode.window.activeTextEditor;
 	const srcRegex = /src="([^"]*)"/;
 	const matches = srcRegex.exec(image);
 	if (!matches) {
@@ -94,7 +88,6 @@ function activate(context) {
 		vscode.workspace.getConfiguration("codelens-sample").update("enableCodeLens", false, true);
 	});
 	vscode.commands.registerCommand("codelens-sample.codelensAction", (args) => {
-		console.log(args);
 		generateAltText(args.matches[0], args.range)
 	});
 	context.subscriptions.push(disposable);
