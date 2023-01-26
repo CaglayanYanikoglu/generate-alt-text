@@ -27,6 +27,9 @@ class CodelensProvider {
 			const text = document.getText();
 			let matches;
 			while ((matches = regex.exec(text)) !== null) {
+				// if alt attribute exist, continue
+				if (matches[0].includes('alt')) continue;
+
 				const line = document.lineAt(document.positionAt(matches.index).line);
 				const indexOf = line.text.indexOf(matches[0]);
 				const position = new vscode.Position(line.lineNumber, indexOf);
@@ -47,19 +50,6 @@ class CodelensProvider {
 		return [];
 	}
 
-	// resolveCodeLens(codeLens, token) {
-	// 	console.log(codeLens);
-	//   if (vscode.workspace.getConfiguration("codelens-sample").get("enableCodeLens", true)) {
-	// 		codeLens.command = {
-	//       title: "Generate Alt Text",
-	//       tooltip: "Generating alt text for image",
-	//       command: "codelens-sample.codelensAction",
-	//       arguments: ["Argument 1", false]
-	//     };
-	//     return codeLens;
-	//   }
-	//   return null;
-	// }
 }
 
 const editor = vscode.window.activeTextEditor;
@@ -72,12 +62,8 @@ function provideGenerateButton(images) {
 	}));
 }
 
-async function generateImage(image, range) {
-	console.log('image', image);
+async function generateAltText(image, range) {
 	if (editor) {
-		const document = editor.document;
-		// const selection = editor.selection;
-		// console.log('selection', selection);
 		const word = image;
 
 		// TODO: if no selection show error
@@ -104,34 +90,9 @@ async function generateImage(image, range) {
 	}
 }
 
-function findImageLines(doc) {
-	const matches = [];
-	for (let i = 0; i < doc.lineCount; i++) {
-		const line = doc.lineAt(i);
-		let match = null;
-		const regex = /<img[^>]*\/?>/g;
-		regex.lastIndex = 0;
-		const text = line.text.substr(0, 1000);
-		console.log('#2##');
-		while ((match = regex.exec(text))) {
-			matches.push({
-				doc: doc,
-				match: match,
-				range: new vscode.Range(i, match.index + 1, i, match.index + 1 + 1)
-			})
-		}
-	}
-	return matches;
-}
-
 
 async function init() {
 	console.log('init');
-	// findImages();
-	//provideCodeLenses();
-	// generateImage();
-
-	// vscode.window.showInformationMessage(response.data);
 }
 
 function activate(context) {
@@ -154,9 +115,7 @@ function activate(context) {
 	});
 
 	vscode.commands.registerCommand("codelens-sample.codelensAction", (args) => {
-		console.log('clickeed', args);
-		const result = generateImage(args.matches[0], args.range)
-
+		generateAltText(args.matches[0], args.range)
 	});
 
 	context.subscriptions.push(disposable);
