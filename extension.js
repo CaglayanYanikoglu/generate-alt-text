@@ -47,6 +47,8 @@ class CodelensProvider {
 
 }
 
+let processingImages = [];
+
 async function generateAltText(image, range) {
 	const editor = vscode.window.activeTextEditor;
 	const srcRegex = /src=['"]([^'"]*)['"]/;
@@ -57,15 +59,25 @@ async function generateAltText(image, range) {
 	}
 
 	const imageUrl = matches[1];
-	const url = `https://alt-text-generator.vercel.app/api/generate?imageUrl=${imageUrl}`
-	const response = await axios(url);
-	const altText = response.data;
+	
+	if (processingImages.includes(imageUrl)) return;
+	processingImages.push(imageUrl);
 
-	editor.edit(editBuilder => {
-		const withAlt = image.replace('img', `img alt="${altText}"`);
-		editBuilder.replace(range, withAlt);
-		console.log('Successfully added.');
-	});
+	try {
+		const url = `https://alt-text-generator.vercel.app/api/generate?imageUrl=${imageUrl}`
+		const response = await axios(url);
+		const altText = response.data;
+
+		editor.edit(editBuilder => {
+			const withAlt = image.replace('img', `img alt="${altText}"`);
+			editBuilder.replace(range, withAlt);
+			console.log('Successfully added.');
+		});
+	} catch (error) {
+		console.log(error);
+	} finally {
+		processingImages = processingImages.filter(image => image !== imageUrl);
+	}
 }
 
 
