@@ -1,5 +1,8 @@
 const vscode = require('vscode');
 const axios = require('axios');
+const fs = require('fs');
+const path = require('path');
+
 
 /**
  * @param {vscode.ExtensionContext} context
@@ -26,11 +29,13 @@ class CodelensProvider {
 			const regex = new RegExp(this.regex);
 			const text = document.getText();
 			let matches;
+
 			while ((matches = regex.exec(text)) !== null) {
 				const line = document.lineAt(document.positionAt(matches.index).line);
 				const indexOf = line.text.indexOf(matches[0]);
 				const position = new vscode.Position(line.lineNumber, indexOf);
 				const range = document.getWordRangeAtPosition(position, new RegExp(this.regex));
+
 				if (range) {
 					this.codeLenses.push(new vscode.CodeLens(range, {
 						title: "Generate Alt Text",
@@ -47,6 +52,10 @@ class CodelensProvider {
 
 }
 
+function checkContainHttps (imageUrl) {
+	return imageUrl.includes('https') || imageUrl.includes('www');
+}
+
 let processingImages = [];
 
 async function generateAltText(image, range) {
@@ -58,8 +67,31 @@ async function generateAltText(image, range) {
 		return;
 	}
 
-	const imageUrl = matches[1];
-	
+	let imageUrl = matches[1];
+
+	const folders = vscode.workspace.workspaceFolders;
+
+	// TODO: check if has a .accessibility config, if does add domain
+	// TODO: add try catch blocks
+	/* const noConfigFolders = folders.filter(folder => {
+		if (fs.existsSync(path.join(folder.uri.fsPath, configFile))) {
+			return false;
+		}
+		return true;
+	}); */
+
+	const configFile = '.accessibility';
+	const filePath = `${folders[0].uri.fsPath}/${configFile}`;
+
+	const rawData = fs.readFileSync(filePath);
+	const config = JSON.parse(rawData);
+
+	// TODO: check if image has http or www, if it has not, add domain from config file
+
+	if (config && config.domain && !checkContainHttps(imageUrl)) {
+		imageUrl = `${config.domain}${imageUrl}`
+	}
+
 	if (processingImages.includes(imageUrl)) return;
 	processingImages.push(imageUrl);
 

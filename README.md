@@ -1,6 +1,6 @@
 # generate-alt-text README
 
-This is the README for your extension "generate-alt-text". After writing up a brief description, we recommend including the following sections.
+Generating alt text for images.
 
 ## Features
 
