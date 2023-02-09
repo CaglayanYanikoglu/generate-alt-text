@@ -3,6 +3,7 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 
+const GENERATE_ALT_TEXT_URL = 'https://ai-caption-generator.vercel.app/';
 
 /**
  * @param {vscode.ExtensionContext} context
@@ -56,6 +57,13 @@ function checkContainHttps (imageUrl) {
 	return imageUrl.includes('https') || imageUrl.includes('www');
 }
 
+function removeSlash (imageUrl) {
+	if (imageUrl([0] === '/')) {
+		return imageUrl.slice(1);
+	}
+	return imageUrl;
+}
+
 let processingImages = [];
 
 async function generateAltText(image, range) {
@@ -71,33 +79,28 @@ async function generateAltText(image, range) {
 
 	const folders = vscode.workspace.workspaceFolders;
 
-	// TODO: check if has a .accessibility config, if does add domain
-	// TODO: add try catch blocks
-	/* const noConfigFolders = folders.filter(folder => {
-		if (fs.existsSync(path.join(folder.uri.fsPath, configFile))) {
-			return false;
-		}
-		return true;
-	}); */
-
 	const configFile = '.accessibility';
 	const filePath = `${folders[0].uri.fsPath}/${configFile}`;
 
-	const rawData = fs.readFileSync(filePath);
-	const config = JSON.parse(rawData);
+	// Check .accessibility config file is exist
+	if (fs.existsSync(path.join(folders[0].uri.fsPath, configFile))) {
+		const rawData = fs.readFileSync(filePath);
+		const config = JSON.parse(rawData);
 
-	// TODO: check if image has http or www, if it has not, add domain from config file
-
-	if (config && config.domain && !checkContainHttps(imageUrl)) {
-		imageUrl = `${config.domain}${imageUrl}`
+		if (config && config.domain && !checkContainHttps(imageUrl)) {
+			// if imageUrl has / at the beginning, remove it.
+			imageUrl = removeSlash(imageUrl);
+			imageUrl = `${config.domain}${imageUrl}`
+		}
 	}
 
 	if (processingImages.includes(imageUrl)) return;
 	processingImages.push(imageUrl);
 
 	try {
-		const url = `https://alt-text-generator.vercel.app/api/generate?imageUrl=${imageUrl}`
-		const response = await axios(url);
+		const response = await axios.post(GENERATE_ALT_TEXT_URL, {
+			image: imageUrl
+		});
 		const altText = response.data;
 
 		editor.edit(editBuilder => {
