@@ -1,9 +1,9 @@
 {
   "name": "generate-alt-text",
   "displayName": "Generate Alt Text",
-  "description": "generating alt text for image",
+  "description": "Generating AI-Drivent Alt Text For Images",
   "publisher": "CaglayanYanikoglu",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "icon": "logo.png",
   "engines": {
     "vscode": "^1.74.0"
