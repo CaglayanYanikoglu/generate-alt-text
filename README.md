@@ -1,65 +1,34 @@
-# generate-alt-text README
 
-Generating alt text for images.
+# Generate AI-Driven Alt Text for Images
 
-## Features
+Generating al-driven alt text description for images. It will help for screen readers. After downloading vscode extension, you will see "Generate Alt Text" button on images which they don't have alt text.
+![App Screenshot](https://github.com/CaglayanYanikoglu/generate-alt-text/blob/main/assets/generate-buttons.png?raw=true)
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
 
-For example if there is an image subfolder under your extension project workspace:
 
-\!\[feature X\]\(images/feature-x.png\)
+## Installation
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+In Vscode Extension Market, search for Generate Alt Text, then download it.
 
-## Requirements
+![App Screenshot](https://miro.medium.com/v2/resize:fit:1400/format:webp/1*N7yTK7cN65Dr98olnvaMEQ.png)
+## Usage/Examples
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+If you have internal source(not full link) for example "images/small-ajax-loader.gif?v=0.122", you can create config file and add your cdn domain name in json.
 
-## Extension Settings
+![App Screenshot](https://github.com/CaglayanYanikoglu/generate-alt-text/blob/main/assets/accssibility-file.png?raw=true)
+## Badges
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
 
-For example:
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 
-This extension contributes the following settings:
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
 
-## Known Issues
+## License
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+[MIT](https://choosealicense.com/licenses/mit/)
 
-## Release Notes
 
-Users appreciate release notes as you update your extension.
+## 🚀 About Us
+https://www.linkedin.com/in/%C3%A7a%C4%9Flayan-yan%C4%B1ko%C4%9Flu-a6b42b13b/
+https://www.linkedin.com/in/mehmet-atakan-demircio%C4%9Flu/
 
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
