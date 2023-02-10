@@ -2,7 +2,7 @@
 # Generate AI-Driven Alt Text for Images
 
 Generating al-driven alt text description for images. It will help for screen readers. After downloading vscode extension, you will see "Generate Alt Text" button on images which they don't have alt text.
-![App Screenshot](https://github.com/CaglayanYanikoglu/generate-alt-text/blob/main/assets/generate-buttons.png?raw=true)
+![App Screenshot](https://github.com/CaglayanYanikoglu/generate-alt-text/blob/main/assets/usage.gif?raw=true)
 
 
 
