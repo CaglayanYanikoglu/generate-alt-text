@@ -61,6 +61,9 @@ function removeSlash (imageUrl) {
 	if (imageUrl[0] === '/') {
 		return imageUrl.slice(1);
 	}
+	if (imageUrl.endsWith('/')) {
+    return imageUrl.slice(0, -1);
+  }
 	return imageUrl;
 }
 
@@ -90,7 +93,8 @@ async function generateAltText(image, range) {
 		if (config && config.domain && !checkContainHttps(imageUrl)) {
 			// if imageUrl has / at the beginning, remove it.
 			imageUrl = removeSlash(imageUrl);
-			imageUrl = `${config.domain}${imageUrl}`
+			const configDomain = removeSlash(config.domain);
+			imageUrl = `${configDomain}/${imageUrl}`
 		}
 	}
 
