@@ -58,7 +58,7 @@ function checkContainHttps (imageUrl) {
 }
 
 function removeSlash (imageUrl) {
-	if (imageUrl([0] === '/')) {
+	if (imageUrl[0] === '/') {
 		return imageUrl.slice(1);
 	}
 	return imageUrl;
