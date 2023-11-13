@@ -17,7 +17,7 @@ class CodelensProvider {
 	onDidChangeCodeLenses = this._onDidChangeCodeLenses.event;
 
 	constructor() {
-		this.regex = /<img(?!.*alt).*?>/g;
+		this.regex = /<img\b(?!.*\balt\b).*?>/gi
 
 		vscode.workspace.onDidChangeConfiguration((_) => {
 			this._onDidChangeCodeLenses.fire();
